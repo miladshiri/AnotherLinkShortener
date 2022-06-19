@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.urls import reverse
-from .models import Link
+from django.db.models.aggregates import Count
+
+from .models import Link, Clicked
 from .forms import ShortLinkForm
 
 
@@ -26,9 +28,12 @@ def make_shortlink(request):
 
 @require_http_methods(["GET"])
 def goto_shortlink(request, slug):
-    link = Link.objects.get(shorted_url=slug)
+    link = get_object_or_404(Link, shorted_url=slug)
+    clicked = Clicked(link=link)
+    clicked.save()
     return redirect(link.original_url)
 
 @require_http_methods(["GET"])
 def detail(request, slug):
-    pass
+    clicks = Clicked.objects.filter(link__detail_url=slug).extra(select={'day': "TO_CHAR(click_date, 'YYYY-MM-DD')"}).values('day').annotate(count=Count('click_date__date'))
+    return render(request, 'core/detail.html', {'clicks':clicks})

@@ -1,87 +1,71 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'base.html' %}
 
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-        <title>Hello, world!</title>
-    </head>
-    <body>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-        <div class="container">
-            <div class="card mt-5">
-                <div class="card-header text-center py-3">
-                    <h1>Make Your Links Shorter!<i class="fas fa-link px-2"></i></h1>
-                </div>
-                <div class="px-3 py-4">
-                    <form id="shortlink-form" action="" method="POST">
-                        {% csrf_token %}
-                        <div class="row g-1">
-                            <div class="col-9">{{form.original_url}}</div>
-                            <div class="col-3">
-                                <button class="btn btn-warning btn-lg w-100" type="submit">
-                                    Get
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+{% block body %}
+<div class="card mt-5">
+    <div class="card-header text-center py-3">
+        <h1>Make Your Links Shorter!<i class="fas fa-link px-2"></i></h1>
+    </div>
+    <div class="px-3 py-4">
+        <form id="shortlink-form" action="" method="POST">
+            {% csrf_token %}
+            <div class="row g-1">
+                <div class="col-9">{{form.original_url}}</div>
+                <div class="col-3">
+                    <button class="btn btn-warning btn-lg w-100" type="submit">
+                        Get
+                    </button>
                 </div>
             </div>
+        </form>
+    </div>
+</div>
 
-            <div class="mx-auto text-center mt-4 d-none" id="result-box">
-                <h2 class="text-warning">Your shortened Url</h2>
-                <p>You can copy the Link below and share it with your friends</p>
-                
-                <div class="card">
-                    <div class="card-header">
-                        Short Link
-                    </div>
-                    <div id='shorted-link-placeholder' class="card-body">
-                    </div>
-                </div>
-                
-                <div class="card mt-4">
-                    <div class="card-header">
-                        Details page
-                    </div>
-                    <div id='detail-link-placeholder' class="card-body">
-                    </div>
-                </div>
-            </div>
+<div class="mx-auto text-center mt-4 d-none" id="result-box">
+    <h2 class="text-warning">Your shortened Url</h2>
+    <p>You can copy the Link below and share it with your friends</p>
+    
+    <div class="card">
+        <div class="card-header">
+            Short Link
         </div>
-        
+        <div id='shorted-link-placeholder' class="card-body">
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            Details page
+        </div>
+        <div id='detail-link-placeholder' class="card-body">
+        </div>
+    </div>
+</div>
+{% endblock %}        
 
 
-        <script type="text/javascript">
-            $(document).ready(function(){
-                $("#shortlink-form").submit(function(e){
-                    e.preventDefault();
-                    var serializedData = $(this).serialize();
-                    $.ajax({
-                        type : 'POST',
-                        url : "{% url 'make_shortlink' %}",
-                        data : serializedData,
-                        success : function(response){
-                            $("#result-box").removeClass("d-none")
-                            $("#shortlink-form")[0].reset();
-                            var link_element = `<a href="${response['shorted_link']}">${response['shorted_link']}</a>`
-                            $("#shorted-link-placeholder").html(link_element) 
-                            var detail_element = `<a href="${response['detail_link']}">${response['detail_link']}</a>`
-                            $("#detail-link-placeholder").html(detail_element) 
-                        },
-                        error : function(response){
-                            console.log(response)
-                        }
-                    })
-                });
-            });
-
-        </script>
-    </body>
-</html>
+{% block jsblock %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#shortlink-form").submit(function(e){
+            e.preventDefault();
+            var serializedData = $(this).serialize();
+            $.ajax({
+                type : 'POST',
+                url : "{% url 'make_shortlink' %}",
+                data : serializedData,
+                success : function(response){
+                    $("#result-box").removeClass("d-none")
+                    $("#shortlink-form")[0].reset();
+                    var link_element = `<a href="${response['shorted_link']}">${response['shorted_link']}</a>`
+                    $("#shorted-link-placeholder").html(link_element) 
+                    var detail_element = `<a href="${response['detail_link']}">${response['detail_link']}</a>`
+                    $("#detail-link-placeholder").html(detail_element) 
+                },
+                error : function(response){
+                    console.log(response)
+                }
+            })
+        });
+    });
+</script>
+{% endblock %}
