@@ -1,5 +1,5 @@
 # Wunderdog Assignment: Another Link Shortener!
-This is a Django-based web application for makeing links shorter. PostgreSQL has been used as the database and the installation could be done with Docker easily.
+This is a Django-based web application for making links shorter. PostgreSQL has been used as the database and the installation could be done with Docker easily.
 
 ## Installation
 
