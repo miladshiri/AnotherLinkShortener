@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+
+
+
+{% block body %}
+
+<h2>Link has been deleted successfully!</h2>
+<a class="btn btn-success btn-lg" href="{% url 'home' %}">
+    Make another link shorter?
+</a>
+
+{% endblock %}
+
+{% block jsblock %}
+<script>
+$(document).ready(function(){
+  
+
+});
+
+</script>
+{% endblock %}

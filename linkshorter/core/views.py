@@ -3,8 +3,9 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.urls import reverse
 from django.db.models.aggregates import Count
+from django.contrib.sites.shortcuts import get_current_site
 
-from .models import Link, Clicked
+from .models import Link, Click
 from .forms import ShortLinkForm
 
 
@@ -19,7 +20,6 @@ def make_shortlink(request):
         new_link = form.save()
 
         new_link.save()
-        print(new_link.detail_url)
         return JsonResponse({"success":True, 
                             "shorted_link":reverse('goto_shortlink', args=[new_link.shorted_url]),
                             "detail_link":reverse('detail', args=[new_link.detail_url])}, status=200)
@@ -29,11 +29,33 @@ def make_shortlink(request):
 @require_http_methods(["GET"])
 def goto_shortlink(request, slug):
     link = get_object_or_404(Link, shorted_url=slug)
-    clicked = Clicked(link=link)
-    clicked.save()
+    click = Click(link=link)
+    click.save()
     return redirect(link.original_url)
 
 @require_http_methods(["GET"])
 def detail(request, slug):
-    clicks = Clicked.objects.filter(link__detail_url=slug).extra(select={'day': "TO_CHAR(click_date, 'YYYY-MM-DD')"}).values('day').annotate(count=Count('click_date__date'))
-    return render(request, 'core/detail.html', {'clicks':clicks})
+    labels = []
+    data = []
+    
+    link = get_object_or_404(Link, detail_url=slug)
+    link.shorted_url = 'http://' + get_current_site(request).domain + reverse('goto_shortlink', args=[link.shorted_url])
+    link.detail_url = 'http://' + get_current_site(request).domain + reverse('detail', args=[link.detail_url])
+    
+    clicks = Click.objects.filter(link__detail_url=slug).extra(select={'day': "TO_CHAR(click_date, 'YYYY-MM-DD')"}).values('day').annotate(count=Count('click_date__date'))
+    
+    for click in clicks:
+        labels.append(click['day'])
+        data.append(click['count'])
+    return render(request, 'core/link_detail.html', {'labels':labels, 'data':data, 'link':link})
+
+@require_http_methods(["GET", "POST"])
+def confirm_delete(request, id):
+    link = get_object_or_404(Link, id=id)
+    
+    if request.method == 'GET':
+        return render(request, 'core/link_confirm_delete.html', {'link':link})
+    
+    if request.method == 'POST':
+        link.delete()
+        return render(request, 'core/link_delete_successful.html')

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+
+
+
+
+{% block body %}
+<table class="table table-dark mt-5">
+    <tbody>
+      <tr>
+        <th scope="row">Original URL</th>
+        <td><a href="{{ link.original_url }}">{{ link.original_url }}</a></td>
+      </tr>
+      <tr>
+        <th scope="row">Shorted URL</th>
+        <td><a href="{{ link.shorted_url }}"> {{ link.shorted_url }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Detail URL</th>
+        <td><a href="{{ link.detail_url }}">{{ link.detail_url }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Create Date</th>
+        <td>{{ link.created_date }}</td>
+      </tr>
+    </tbody>
+</table>
+  
+<a class="btn btn-danger btn-lg w-100" href="{% url 'confirm-delete' link.id %}">
+    Delete this link
+</a>
+
+<!-- displaying the chart -->
+<div id="clicksPerDayChart"></div>
+{% endblock %}
+
+{% block jsblock %}
+<script>
+$(document).ready(function(){
+    // Plot the data 
+    var data = [
+    {
+        x: {{ labels|safe }},
+        y: {{ data|safe }},
+        type: 'bar'
+    }
+    ];
+    Plotly.newPlot('clicksPerDayChart', data);
+
+});
+
+</script>
+{% endblock %}
