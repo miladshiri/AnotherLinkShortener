@@ -4,15 +4,18 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.db.models.aggregates import Count
 from django.contrib.sites.shortcuts import get_current_site
-
 from .models import Link, Click
 from .forms import ShortLinkForm
 
 
+## This view renders the home page
 @require_http_methods(["GET"])
 def home(request):
+    
     return render(request, 'core/home.html', {'form':ShortLinkForm()})
 
+
+## This view creates the short link
 @require_http_methods(["POST"])
 def make_shortlink(request):
     form = ShortLinkForm(request.POST)
@@ -26,6 +29,7 @@ def make_shortlink(request):
     return JsonResponse({"success":False}, status=400)
 
 
+## This view redirects to the original link
 @require_http_methods(["GET"])
 def goto_shortlink(request, slug):
     link = get_object_or_404(Link, shorted_url=slug)
@@ -33,6 +37,8 @@ def goto_shortlink(request, slug):
     click.save()
     return redirect(link.original_url)
 
+
+## This view render the details and a chart for the link
 @require_http_methods(["GET"])
 def detail(request, slug):
     labels = []
@@ -49,6 +55,8 @@ def detail(request, slug):
         data.append(click['count'])
     return render(request, 'core/link_detail.html', {'labels':labels, 'data':data, 'link':link})
 
+
+## This view handles the link deletion functionality
 @require_http_methods(["GET", "POST"])
 def confirm_delete(request, id):
     link = get_object_or_404(Link, id=id)

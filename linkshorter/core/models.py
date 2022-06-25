@@ -4,6 +4,8 @@ from django.utils.crypto import get_random_string
 from django.db import models
 from django.utils import timezone
 
+
+## This is the model for links 
 class Link(models.Model):
     original_url = models.CharField(max_length = 2048)
     shorted_url = models.CharField(max_length = 10)
@@ -21,13 +23,11 @@ class Link(models.Model):
         
         super().save(*args, **kwargs)
 
+
+## This is the model for clicks
 class Click(models.Model):
     link = models.ForeignKey(Link, on_delete=models.CASCADE)
     click_date = models.DateTimeField(default=timezone.now)
     
     def __str__ (self):
         return str(self.link.shorted_url) + ' AT ' + str(self.click_date)
-
-    def save(self, *args, **kwargs):
-        # self.click_date = timezone.now()
-        super().save(*args, **kwargs)
