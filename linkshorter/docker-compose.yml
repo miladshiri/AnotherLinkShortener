@@ -1,0 +1,25 @@
+version: '3.3'
+
+services:
+  web: 
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/usr/src/qvikapp/
+    ports:
+      - 8000:8000
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=wunderdoguser
+      - POSTGRES_DB=wunderdogshortlink
+      - POSTGRES_PASSWORD=password
+
+volumes:
+  pgdata:
