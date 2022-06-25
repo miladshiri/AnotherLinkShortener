@@ -1,9 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
-from django.urls import reverse
 from django.db.models.aggregates import Count
-from django.contrib.sites.shortcuts import get_current_site
 from .models import Link, Click
 from .forms import ShortLinkForm
 
@@ -24,8 +22,9 @@ def make_shortlink(request):
 
         new_link.save()
         return JsonResponse({"success":True, 
-                            "shorted_link":reverse('goto_shortlink', args=[new_link.shorted_url]),
-                            "detail_link":reverse('detail', args=[new_link.detail_url])}, status=200)
+                            "absolute_shorted_url":new_link.absolute_shorted_url,
+                            "absolute_detail_url":new_link.absolute_detail_url
+                            }, status=200)
     return JsonResponse({"success":False}, status=400)
 
 
@@ -45,9 +44,6 @@ def detail(request, slug):
     data = []
     
     link = get_object_or_404(Link, detail_url=slug)
-    link.shorted_url = 'http://' + get_current_site(request).domain + reverse('goto_shortlink', args=[link.shorted_url])
-    link.detail_url = 'http://' + get_current_site(request).domain + reverse('detail', args=[link.detail_url])
-    
     clicks = Click.objects.filter(link__detail_url=slug).extra(select={'day': "TO_CHAR(click_date, 'YYYY-MM-DD')"}).values('day').annotate(count=Count('click_date__date'))
     
     for click in clicks:

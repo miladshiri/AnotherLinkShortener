@@ -3,26 +3,10 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<table class="table table-dark mt-5">
-    <tbody>
-      <tr>
-        <th scope="row">Original URL</th>
-        <td><a href="{{ link.original_url }}">{{ link.original_url }}</a></td>
-      </tr>
-      <tr>
-        <th scope="row">Shorted URL</th>
-        <td><a href="{{ link.shorted_url }}"> {{ link.shorted_url }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Detail URL</th>
-        <td><a href="{{ link.detail_url }}">{{ link.detail_url }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Create Date</th>
-        <td>{{ link.created_date }}</td>
-      </tr>
-    </tbody>
-</table>
+<h2>Number of clicks per day for </h2>
+
+{% include 'core/components/link_detail_component.html' %}
+
   
 <a class="btn btn-danger btn-lg w-100" href="{% url 'confirm-delete' link.id %}">
     Delete this link

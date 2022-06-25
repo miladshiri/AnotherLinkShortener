@@ -22,9 +22,9 @@
     </div>
 </div>
 
-<div class="mx-auto text-center mt-4 d-none" id="result-box">
+<div class="mx-auto text-center m-4 d-none" id="result-box">
     <h2 class="text-warning">Your shortened Url</h2>
-    <p>You can copy the Link below and share it with your friends</p>
+    <p>You can copy the link below and share it with your friends</p>
     
     <div class="card">
         <div class="card-header">
@@ -36,7 +36,7 @@
     
     <div class="card mt-4">
         <div class="card-header">
-            Details page
+            Detail Page
         </div>
         <div id='detail-link-placeholder' class="card-body">
         </div>
@@ -58,9 +58,11 @@
                 success : function(response){
                     $("#result-box").removeClass("d-none")
                     $("#shortlink-form")[0].reset();
-                    var link_element = `<a href="${response['shorted_link']}">${response['shorted_link']}</a>`
+                    
+                    var link_element = `<a target="_blank"  href="${response['absolute_shorted_url']}">${response['absolute_shorted_url']}</a>`
                     $("#shorted-link-placeholder").html(link_element) 
-                    var detail_element = `<a href="${response['detail_link']}">${response['detail_link']}</a>`
+                    
+                    var detail_element = `<a target="_blank"  href="${response['absolute_detail_url']}">${response['absolute_detail_url']}</a>`
                     $("#detail-link-placeholder").html(detail_element) 
                 },
                 error : function(response){
