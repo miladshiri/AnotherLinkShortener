@@ -1,11 +1,11 @@
-# Wunderdog Assignment: Another Link Shortener!
+# Another Link Shortener!
 This is a Django-based web application for making links shorter. PostgreSQL has been used as the database and the installation could be done with Docker easily.
 
 ## Installation
 
 First, 
 ```
-git clone https://github.com/milad-shiri/wunderdog_shortlink.git
+git clone https://github.com/miladshiri/another-link-shortener.git
 cd linkshorter/
 ```
 then:
